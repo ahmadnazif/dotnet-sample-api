@@ -3,7 +3,7 @@ A very simple API with typical REST endpoints, with a SignalR service
 
 ## Database
 - Uses MySQL database
-- Create database:
+- Create `phonebook` database:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS `phonebook`
@@ -19,3 +19,4 @@ CREATE TABLE IF NOT EXISTS `contact` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
+-  Create & assign user for this database with full priviledges
