@@ -117,7 +117,7 @@ public class DbRepo(ILogger<DbRepo> logger, MySqlDataSource db) : IDbRepo
             resp = new()
             {
                 IsSuccess = true,
-                Message = "SMS added"
+                Message = $"Contact '{c.FirstName} {c.LastName}' added"
             };
 
             return resp;
@@ -270,7 +270,7 @@ public class DbRepo(ILogger<DbRepo> logger, MySqlDataSource db) : IDbRepo
         try
         {
             List<Contact> data = [];
-            string sql = "SELECT * FROM sms;";
+            string sql = "SELECT * FROM contact;";
 
             await using MySqlConnection connection = await db.OpenConnectionAsync();
             await using MySqlCommand cmd = new(sql, connection);
@@ -297,4 +297,42 @@ public class DbRepo(ILogger<DbRepo> logger, MySqlDataSource db) : IDbRepo
             return [];
         }
     }
+
+    public async Task<List<Contact>> SearchContactAsync(string keyword)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return [];
+
+            List<Contact> data = [];
+
+            string sql = $"SELECT * FROM contact WHERE firstname LIKE '%{keyword}%' OR lastname LIKE '%{keyword}%' OR num LIKE '%{keyword}%';";
+
+            await using MySqlConnection connection = await db.OpenConnectionAsync();
+            await using MySqlCommand cmd = new(sql, connection);
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                data.Add(new()
+                {
+                    Id = GetIntValue(reader["id"]).Value,
+                    FirstName = GetStringValue(reader["firstname"]),
+                    LastName = GetStringValue(reader["lastname"]),
+                    PhoneNumber = GetStringValue(reader["num"]),
+                    CreatedTime = GetDateTimeValue(reader["created_time"]).Value,
+                    UpdateTime = GetDateTimeValue(reader["update_time"]).Value
+                });
+            }
+
+            return data;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"{nameof(SearchContactAsync)}: {ex.Message}");
+            return [];
+        }
+    }
+
 }

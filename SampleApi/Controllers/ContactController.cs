@@ -20,6 +20,9 @@ public class ContactController(IDbRepo db) : ControllerBase
     [HttpGet("list-all")]
     public async Task<ActionResult<List<Contact>>> ListAll() => await db.ListAllContactAsync();
 
+    [HttpGet("search")]
+    public async Task<ActionResult<List<Contact>>> Search([FromQuery] string? keyword) => await db.SearchContactAsync(keyword);
+
     [HttpPost("add")]
     public async Task<ActionResult<ResponseBase>> Add([FromBody] ContactBase req) => await db.AddContactAsync(req);
 

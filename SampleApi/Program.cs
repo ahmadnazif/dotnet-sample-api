@@ -8,6 +8,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(x => x.AddDefaultPolicy(y => y.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
+builder.WebHost.ConfigureKestrel(x =>
+{
+    var port = int.Parse(config["Port"]);
+    x.ListenAnyIP(port);
+});
+
 #region DB registration
 
 var dbServer = config["Db:Server"];
@@ -34,14 +42,6 @@ builder.Services.AddScoped<IDbRepo, DbRepo>();
 #endregion
 
 var app = builder.Build();
-
-builder.Services.AddCors(x => x.AddDefaultPolicy(y => y.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-
-builder.WebHost.ConfigureKestrel(x =>
-{
-    var port = int.Parse(config["Port"]);
-    x.ListenAnyIP(port);
-});
 
 app.UseSwagger();
 app.UseSwaggerUI();

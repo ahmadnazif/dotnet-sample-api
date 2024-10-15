@@ -5,6 +5,7 @@ namespace SampleApi.Services;
 public interface IDbRepo
 {
     Task<int> CountAllContactAsync();
+    Task<List<Contact>> SearchContactAsync(string keyword);
     Task<Contact> GetContactAsync(int id);
     Task<List<Contact>> ListAllContactAsync();
     Task<ResponseBase> AddContactAsync(ContactBase c);
