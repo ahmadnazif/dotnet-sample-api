@@ -1,5 +1,6 @@
 using MySqlConnector;
 using SampleApi.Services;
+using SampleApi.SignalrHubs;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -41,11 +42,19 @@ builder.Services.AddScoped<IDbRepo, DbRepo>();
 
 #endregion
 
+#region SignalR registration
+
+builder.Services.AddSignalR().AddMessagePackProtocol();
+
+#endregion
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapHub<StatisticHub>("/stat-hub");
 
 await app.RunAsync();
